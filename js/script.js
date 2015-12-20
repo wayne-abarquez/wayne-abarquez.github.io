@@ -36,10 +36,10 @@ $(function(){
 		    	position: storeLatLng,
 		    	title: item.name,
 		    	map: map,
+		    	icon: "img/store.png"
 		   });
 
 		    store.name    = item.name; 
-		    // store.address = item.vicinity;
 		    storeMarkers[index] = store;
 
 
@@ -173,15 +173,28 @@ $(function(){
 			    userLocation = new google.maps.Marker({
 			    		position: pos,
 			    		map: map,
-			    		icon: {
-			                path: google.maps.SymbolPath.CIRCLE,
-			                scale: 5,
-			                fillColor: '#6ac1ff',
-			                fillOpacity: 1,
-			                strokeColor: 'black',
-	                		strokeWeight: 1
-	            		}
+			    		title: "Current Location",
+			    		icon: 'img/bluedot_retina.png',
+			    		optimized: false
 			    	});
+
+			    google.maps.event.addListener(userLocation, 'click', function() {
+					// Reverse Geocode Latlng to Address 
+					$.when(reverseGeocode(userLocation.getPosition())).then(function(results) {
+						var address = results[0].formatted_address;
+
+						var infoContent =  "<div class='userInfowindow'>";
+					   		infoContent += "<div class='locationLabel'><b>Current Location</b></div> <br/>";
+					        infoContent += "Address: <b>"+address+"</b> <br/>";
+					        infoContent += "</div>";
+
+						var infowindow = new google.maps.InfoWindow({
+				 			content: infoContent
+						});
+
+			   			infowindow.open(map, userLocation);  
+					});
+		   		});
 		    }
 
 		    map.panTo(pos);
@@ -244,7 +257,6 @@ $(function(){
 			clearStoresPlaces();
 
 
-			// for(var i=0, place; place = results[i]; i++) {
 			results.forEach(function(place, index) {
 
 				var storeLatLng = place.geometry.location;
@@ -253,6 +265,7 @@ $(function(){
 			    	position: storeLatLng,
 			    	title: place.name,
 			    	map: map,
+		    		icon: "img/store.png"
 			   });
 
 				store.name    		  = place.name; 
@@ -274,7 +287,6 @@ $(function(){
 				google.maps.event.addListener(storePlacesMarkers[index], 'click', function() {
 			   		infowindow.open(map, store);  
 		   		});
-			// }
 			});
 
 		};
